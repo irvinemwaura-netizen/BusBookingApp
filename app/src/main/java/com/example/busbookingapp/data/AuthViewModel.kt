@@ -3,7 +3,11 @@ package com.example.busbookingapp.data
 import android.content.Context
 import android.widget.Toast
 import androidx.navigation.NavController
+import com.example.busbookingapp.models.UserModel
+import com.example.busbookingapp.navigation.Routes.ROUTE_DASHBOARD
+import com.example.busbookingapp.navigation.Routes.ROUTE_LOGIN
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class AuthViewModel {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -44,8 +48,7 @@ class AuthViewModel {
         dbRef.setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(context, "User Registered successfully", Toast.LENGTH_LONG).show()
-                // Navigate safely to login without crashing
-                navController.navigate(ROUTE_LOGIN) {
+                navController.navigate("login") {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true
                     }
@@ -73,7 +76,7 @@ class AuthViewModel {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_LONG).show()
 
                     // Navigate to Dashboard and clear back stack
-                    navController.navigate(ROUTE_DASHBOARD) {
+                    navController.navigate("dashboard") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
 

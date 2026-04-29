@@ -51,7 +51,12 @@ fun RegisterScreen(
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-
+        Image(
+            painter = painterResource(id = R.drawable.coach),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
