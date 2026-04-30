@@ -52,10 +52,12 @@ fun RegisterScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.coach),
+            painter = painterResource(id = R.drawable.bus),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
+                .fillMaxWidth()
+                .padding(16.dp)
         )
         Box(
             modifier = Modifier

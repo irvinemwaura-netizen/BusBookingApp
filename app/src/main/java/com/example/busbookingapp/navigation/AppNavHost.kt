@@ -13,7 +13,7 @@ import com.example.busbookingapp.ui.theme.screens.register.RegisterScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Routes.ROUTE_LOGIN
+    startDestination: String = Routes.ROUTE_REGISTER
 ) {
     NavHost(
         navController = navController,
