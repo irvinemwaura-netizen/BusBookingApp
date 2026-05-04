@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.busbookingapp.data.AuthViewModel
+import com.example.busbookingapp.navigation.Routes
 
 // ─── Data models ────────────────────────────────────────────────────────────
 
@@ -114,7 +115,6 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Quick-action cards
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -141,7 +141,7 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(busRoutes) { route ->
-                RouteCard(route = route)
+                RouteCard(route = route,navController=navController)
             }
         }
 
@@ -160,10 +160,10 @@ fun DashboardScreen(
     }
 }
 
-// ─── Route card ──────────────────────────────────────────────────────────────
+
 
 @Composable
-fun RouteCard(route: BusRoute) {
+fun RouteCard(route: BusRoute,navController: NavController) {
     var expanded        by remember { mutableStateOf(false) }
     var selectedTime    by remember { mutableStateOf<Departure?>(null) }
     var selectedClass   by remember { mutableStateOf<BusClass?>(null) }
@@ -269,17 +269,17 @@ fun RouteCard(route: BusRoute) {
                         }
                     }
 
-                    // Book button — only when both time and class are chosen
                     if (selectedTime != null && selectedClass != null) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(
-                            onClick = { /* TODO: navigate to booking screen */ },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
-                        ) {
+                                onClick = {
+                                    val time = selectedTime?.time ?: "N/A"
+                                    val price = selectedClass?.price.toString()
+
+                                    navController.navigate("seat_selection/$time/$price")
+                                },
+                                // ...
+                            ) {
                             Text(
                                 text = "Book ${selectedClass!!.label} • ${selectedTime!!.time} — Ksh ${"%,d".format(selectedClass!!.price)}",
                                 fontSize = 14.sp
@@ -294,7 +294,7 @@ fun RouteCard(route: BusRoute) {
     }
 }
 
-// ─── Departure time chip ──────────────────────────────────────────────────────
+
 
 @Composable
 fun DepartureChip(
@@ -328,7 +328,7 @@ fun DepartureChip(
     }
 }
 
-// ─── Bus class card ───────────────────────────────────────────────────────────
+
 
 @Composable
 fun BusClassCard(
@@ -369,7 +369,7 @@ fun BusClassCard(
     }
 }
 
-// ─── Quick action card ────────────────────────────────────────────────────────
+
 
 @Composable
 fun DashboardCard(
@@ -396,7 +396,7 @@ fun DashboardCard(
     }
 }
 
-// ─── Preview ──────────────────────────────────────────────────────────────────
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

@@ -42,6 +42,7 @@ fun RegisterScreen(
     navController: NavController,
     authViewModel: AuthViewModel = viewModel()
 ) {
+    var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -82,6 +83,20 @@ fun RegisterScreen(
                 modifier = Modifier.padding(10.dp)
             )
 
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Enter name") },
+                placeholder = { Text("Please Enter name", color = Color.White) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.Red,
+                    focusedBorderColor = Color.Red,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
+            )
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -162,6 +177,7 @@ fun RegisterScreen(
             Button(onClick = {
                 authViewModel.signup(
                     username = username,
+                    name = name,
                     email = email,
                     phoneNumber = phoneNumber,
                     password = password,

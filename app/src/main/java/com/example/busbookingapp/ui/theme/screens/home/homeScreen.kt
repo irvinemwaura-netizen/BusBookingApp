@@ -30,7 +30,6 @@ fun HomeScreen(navController: NavController) {
     data class OnboardingPage(
         val title: String,
         val description: String,
-        val icon: String
     )
 
     // DATA (inside + remembered)
@@ -39,17 +38,17 @@ fun HomeScreen(navController: NavController) {
             OnboardingPage(
                 "Welcome to Bus Booker!",
                 "Book buses easily across the country.",
-                "📍"
+
             ),
             OnboardingPage(
                 "Secure Payments",
                 "Pay safely using mobile money.",
-                "💳"
+
             ),
             OnboardingPage(
                 "Luxury Comfort",
                 "Travel in VIP buses with Wi-Fi and AC.",
-                "🛋️"
+
             )
         )
     }
@@ -79,7 +78,6 @@ fun HomeScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
 
-                Text(text = item.icon, fontSize = 100.sp)
 
                 Spacer(modifier = Modifier.height(40.dp))
 
@@ -126,7 +124,7 @@ fun HomeScreen(navController: NavController) {
 
         Button(
             onClick = {
-                navController.navigate(Routes.ROUTE_LOGIN) {
+                navController.navigate(Routes.ROUTE_REGISTER) {
                     popUpTo(Routes.ROUTE_HOME) { inclusive = true }
                 }
             },
