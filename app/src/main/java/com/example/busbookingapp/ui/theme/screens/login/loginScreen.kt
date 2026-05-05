@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -40,14 +41,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val authViewModel = AuthViewModel()
-                var email by remember { mutableStateOf("") }
+    val authViewModel: AuthViewModel = viewModel()
+    var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
                 val context = LocalContext.current
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
-                        painter = painterResource(id = R.drawable.bus),
+                        painter = painterResource(id = R.drawable.bg),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -65,12 +66,26 @@ fun LoginScreen(navController: NavController) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier
+                                .size(140.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.Gray, CircleShape)
+                                .shadow(4.dp, CircleShape)
+                        )
                         Text(
                             text = "Login",
-                            color = Color.Red,
+                            color = Color.Gray,
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 24.dp)
+                                .background(
+                                    color = Color.Blue,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
                         )
 
                         OutlinedTextField(

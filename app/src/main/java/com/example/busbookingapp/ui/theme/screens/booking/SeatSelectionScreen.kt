@@ -82,7 +82,6 @@ fun SeatSelectionScreen(
             ) {
                 items(totalSeats) { index ->
                     val seatNum = index + 1
-                    // Simulated booked seats (multiples of 5 are taken)
                     val isBooked = seatNum % 5 == 0
 
                     SeatIcon(
@@ -102,7 +101,6 @@ fun SeatSelectionScreen(
             onClick = {
                 if (selectedSeat != null) {
                     val plate = "KCD ${(100..999).random()}X"
-                    // Pass ALL data to the final screen
                     navController.navigate("booking/$plate/$selectedSeat/$tripTime/$tripPrice")
                 }
             },

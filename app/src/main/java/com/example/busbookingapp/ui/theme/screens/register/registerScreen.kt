@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
@@ -53,9 +54,10 @@ fun RegisterScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.bus),
+            painter = painterResource(id = R.drawable.bg),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Crop
+                ,
             modifier = Modifier.fillMaxSize()
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -73,14 +75,27 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(140.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color.Gray, CircleShape)
+                    .shadow(4.dp, CircleShape)
+            )
 
             Text(
                 text = "Register Here",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Red,
+                color = Color.Gray,
                 modifier = Modifier.padding(10.dp)
+                    .background(
+                        color = Color.Blue,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
             )
 
             OutlinedTextField(
