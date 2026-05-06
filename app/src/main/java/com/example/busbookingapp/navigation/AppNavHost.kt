@@ -1,5 +1,3 @@
-
-
 package com.example.busbookingapp.navigation
 
 import androidx.compose.runtime.Composable
@@ -8,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.busbookingapp.ui.theme.screens.booking.BookingSuccessScreen
+import com.example.busbookingapp.ui.theme.screens.booking.PaymentScreen
 import com.example.busbookingapp.ui.theme.screens.dashboard.DashboardScreen
 import com.example.busbookingapp.ui.theme.screens.home.HomeScreen
 import com.example.busbookingapp.ui.theme.screens.login.LoginScreen
@@ -23,19 +22,14 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(Routes.ROUTE_HOME) {
-            HomeScreen(navController)
-        }
-
+        composable(Routes.ROUTE_HOME) { HomeScreen(navController) }
         composable(Routes.ROUTE_REGISTER) { RegisterScreen(navController) }
         composable(Routes.ROUTE_LOGIN) { LoginScreen(navController) }
+        composable(Routes.ROUTE_DASHBOARD) { DashboardScreen(navController) }
 
-        composable(Routes.ROUTE_DASHBOARD) {
-            DashboardScreen(navController)
-        }
-
+        // 1. Seat Selection
         composable(
-            route = "seat_selection/{time}/{price}",
+            route = Routes.ROUTE_SEAT_SELECTION,
             arguments = listOf(
                 navArgument("time") { type = NavType.StringType },
                 navArgument("price") { type = NavType.StringType }
@@ -43,9 +37,27 @@ fun AppNavHost(
         ) { backStack ->
             val time = backStack.arguments?.getString("time") ?: ""
             val price = backStack.arguments?.getString("price") ?: ""
-
             SeatSelectionScreen(navController, time, price)
         }
+
+
+        composable(
+            route = "payment_screen/{plate}/{seat}/{time}/{price}",
+            arguments = listOf(
+                navArgument("plate") { type = NavType.StringType },
+                navArgument("seat") { type = NavType.StringType },
+                navArgument("time") { type = NavType.StringType },
+                navArgument("price") { type = NavType.StringType }
+            )
+        ) { backStack ->
+            val plate = backStack.arguments?.getString("plate") ?: "N/A"
+            val seat = backStack.arguments?.getString("seat") ?: "N/A"
+            val time = backStack.arguments?.getString("time") ?: "N/A"
+            val price = backStack.arguments?.getString("price") ?: "0"
+
+            PaymentScreen(navController, plate, seat, time, price)
+        }
+
         composable(
             route = Routes.ROUTE_BOOKING,
             arguments = listOf(
@@ -70,4 +82,3 @@ fun AppNavHost(
         }
     }
 }
-

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -56,11 +57,8 @@ fun RegisterScreen(
         Image(
             painter = painterResource(id = R.drawable.bg),
             contentDescription = null,
-            contentScale = ContentScale.Crop
-                ,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
-                .fillMaxWidth()
-                .padding(16.dp)
         )
         Box(
             modifier = Modifier
@@ -91,11 +89,7 @@ fun RegisterScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
                 modifier = Modifier.padding(10.dp)
-                    .background(
-                        color = Color.Blue,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
+
             )
 
             OutlinedTextField(
@@ -200,7 +194,10 @@ fun RegisterScreen(
                     navController = navController,
                     context = context
                 )
-            }) {
+            },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray
+                )) {
                 Text("Register")
             }
 
@@ -209,7 +206,7 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     text = "Login Here",
-                    color = Color.Green,
+                    color = Color.Gray,
                     modifier = Modifier.clickable {
                         navController.navigate("login")
                     }

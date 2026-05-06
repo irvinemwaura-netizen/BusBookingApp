@@ -81,11 +81,7 @@ fun LoginScreen(navController: NavController) {
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 24.dp)
-                                .background(
-                                    color = Color.Blue,
-                                    shape = RoundedCornerShape(20.dp)
-                                )
-                                .padding(horizontal = 24.dp, vertical = 8.dp)
+
                         )
 
                         OutlinedTextField(
@@ -140,7 +136,10 @@ fun LoginScreen(navController: NavController) {
                                     )
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Gray
+                                    )
                         ) {
                             Text("Login", color = Color.White)
                         }

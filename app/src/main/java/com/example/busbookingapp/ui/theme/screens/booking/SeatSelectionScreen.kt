@@ -101,7 +101,7 @@ fun SeatSelectionScreen(
             onClick = {
                 if (selectedSeat != null) {
                     val plate = "KCD ${(100..999).random()}X"
-                    navController.navigate("booking/$plate/$selectedSeat/$tripTime/$tripPrice")
+                    navController.navigate("payment_screen/$plate/$selectedSeat/$tripTime/$tripPrice")
                 }
             },
             enabled = selectedSeat != null,
