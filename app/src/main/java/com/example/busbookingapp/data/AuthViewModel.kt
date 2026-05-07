@@ -13,6 +13,11 @@ import com.google.firebase.database.FirebaseDatabase
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+
+    val currentUser: com.google.firebase.auth.FirebaseUser?
+        get() = auth.currentUser
+
+
     fun signup(   username: String,
                   name: String,
                   email: String,

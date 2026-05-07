@@ -12,6 +12,8 @@ import com.example.busbookingapp.ui.theme.screens.home.HomeScreen
 import com.example.busbookingapp.ui.theme.screens.login.LoginScreen
 import com.example.busbookingapp.ui.theme.screens.register.RegisterScreen
 import com.example.busbookingapp.ui.theme.screens.booking.SeatSelectionScreen
+import com.example.busbookingapp.ui.theme.screens.buses.BusListScreen
+import com.example.busbookingapp.ui.theme.screens.trips.MyTripsScreen
 
 @Composable
 fun AppNavHost(
@@ -27,7 +29,17 @@ fun AppNavHost(
         composable(Routes.ROUTE_LOGIN) { LoginScreen(navController) }
         composable(Routes.ROUTE_DASHBOARD) { DashboardScreen(navController) }
 
-        // 1. Seat Selection
+        // --- Fleet Manager / Buses ---
+        composable(Routes.ROUTE_TRIPS) {
+            BusListScreen(navController)
+        }
+
+        // --- My Bookings ---
+        composable(Routes.ROUTE_BUSSES) { // Note: Your object has ROUTE_BUSSES for the trips list
+            MyTripsScreen(navController)
+        }
+
+        // --- Seat Selection ---
         composable(
             route = Routes.ROUTE_SEAT_SELECTION,
             arguments = listOf(
@@ -40,9 +52,9 @@ fun AppNavHost(
             SeatSelectionScreen(navController, time, price)
         }
 
-
+        // --- Payment ---
         composable(
-            route = "payment_screen/{plate}/{seat}/{time}/{price}",
+            route = "${Routes.ROUTE_PAYMENT}/{plate}/{seat}/{time}/{price}",
             arguments = listOf(
                 navArgument("plate") { type = NavType.StringType },
                 navArgument("seat") { type = NavType.StringType },
@@ -58,6 +70,7 @@ fun AppNavHost(
             PaymentScreen(navController, plate, seat, time, price)
         }
 
+        // --- Booking Success ---
         composable(
             route = Routes.ROUTE_BOOKING,
             arguments = listOf(

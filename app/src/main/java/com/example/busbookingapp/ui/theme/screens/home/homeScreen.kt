@@ -105,7 +105,7 @@ fun HomeScreen(navController: NavController) {
                 Text(
                     text = item.description,
                     fontSize = 16.sp,
-                    color = Color.LightGray,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
