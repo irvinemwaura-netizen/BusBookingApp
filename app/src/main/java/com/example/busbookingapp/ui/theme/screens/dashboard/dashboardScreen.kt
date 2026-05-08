@@ -46,7 +46,7 @@ fun busClassesForRoute(luxuryPrice: Int, expressPrice: Int, standardPrice: Int) 
 )
 
 val busRoutes = listOf(
-    BusRoute("Nairobi -- Eldoret", "5 hrs", defaultDepartures, busClassesForRoute(1200, 1000, 700)),
+    BusRoute("Nairobi -- Eldoret", "5 hrs", defaultDepartures, busClassesForRoute(1, 1000, 700)),
     BusRoute("Nairobi -- Mombasa", "8 hrs", defaultDepartures, busClassesForRoute(2500, 2000, 1200)),
     BusRoute("Nairobi -- Kisumu", "6 hrs", defaultDepartures, busClassesForRoute(1800, 1500, 900)),
     BusRoute("Nairobi -- Nakuru", "2 hrs", defaultDepartures, busClassesForRoute(700, 600, 350)),

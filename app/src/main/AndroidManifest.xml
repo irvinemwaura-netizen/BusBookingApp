@@ -14,7 +14,7 @@
         android:roundIcon="@drawable/bg"
         android:supportsRtl="true"
         android:theme="@style/Theme.BusBookingApp"
-        android:usesCleartextTraffic="true"> <!-- ADD THIS TOO for Sandbox testing -->
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.busbookingapp.api.TokenResponse
 import com.example.busbookingapp.api.RetrofitClient
 import com.example.busbookingapp.api.StkPushRequest
 import kotlinx.coroutines.launch
@@ -37,6 +38,10 @@ fun PaymentScreen(
     val coroutineScope = rememberCoroutineScope()
     val backgroundColor = Color(0xFFF8FAFC)
 
+
+    val consumerKey = "xaMIsjJNO4XX0kuVcbsNecLCN5NGOSySzDjT0VETjdfuaWth"
+    val consumerSecret = "Z7Cn3vFHyaIRH28T8HA4bXQsluyly3rSxO33UDl4c8JRhAAlhQikZvEzov6zQX0g"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +52,6 @@ fun PaymentScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Ticket Summary
         TicketSummaryCard(plate, seat, time, price)
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -71,73 +75,86 @@ fun PaymentScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "You will receive an M-Pesa PIN prompt on your phone.",
+            text = "Enter your number to receive an M-Pesa PIN prompt.",
             fontSize = 12.sp,
             color = Color.Gray
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // ─── THE PAYMENT BUTTON ───
         Button(
             onClick = {
                 if (phoneNumber.length >= 10) {
                     isProcessing = true
                     coroutineScope.launch {
                         try {
-                            // 1. Format Phone Number (254...)
+
+                            val cleanNumber = phoneNumber.replace("\\s".toRegex(), "")
                             val formattedPhone = when {
-                                phoneNumber.startsWith("0") -> "254" + phoneNumber.substring(1)
-                                phoneNumber.startsWith("+") -> phoneNumber.substring(1)
-                                phoneNumber.startsWith("7") || phoneNumber.startsWith("1") -> "254$phoneNumber"
-                                else -> phoneNumber
+                                cleanNumber.startsWith("0") -> "254" + cleanNumber.substring(1)
+                                cleanNumber.startsWith("+") -> cleanNumber.substring(1)
+                                cleanNumber.startsWith("254") -> cleanNumber
+                                else -> "254$cleanNumber"
                             }
 
-                            // 2. Generate Timestamp & Password
-                            val timestamp = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
-                            val shortCode = "174379" // Sandbox Shortcode
-                            val passkey = "bfb3c64829623dc11fb49e006a48a44174379bfb3c64829623dc11fb49e006a48"
-                            val password = Base64.encodeToString(
-                                "$shortCode$passkey$timestamp".toByteArray(),
+                            val authHeader = "Basic " + Base64.encodeToString(
+                                "$consumerKey:$consumerSecret".toByteArray(),
                                 Base64.NO_WRAP
                             )
 
-                            val request = StkPushRequest(
-                                BusinessShortCode = shortCode,
-                                Password = password,
-                                Timestamp = timestamp,
-                                TransactionType = "CustomerPayBillOnline",
-                                Amount = price,
-                                PartyA = formattedPhone,
-                                PartyB = shortCode,
-                                PhoneNumber = formattedPhone,
-                                CallBackURL = "https://yourdomain.com/callback", // Must be HTTPS
-                                AccountReference = "BusBooking",
-                                TransactionDesc = "Payment for Seat $seat"
-                            )
+                            val tokenResponse = RetrofitClient.mpesaService.generateToken(authHeader)
 
-                            // 4. Execute network call (Replace TOKEN with your dynamic/portal token)
-                            val response = RetrofitClient.mpesaService.initiateStkPush(
-                                bearerToken = "Bearer PASTE_YOUR_ACCESS_TOKEN_HERE",
-                                request = request
-                            )
+                            if (tokenResponse.isSuccessful) {
+                                val accessToken = tokenResponse.body()?.accessToken
+                                if (accessToken != null) {
+                                    val timestamp = SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(Date())
+                                    val shortCode = "174379"
+                                    val passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
 
-                            if (response.isSuccessful) {
-                                // Success! Navigate to confirmation
-                                val encodedPlate = URLEncoder.encode(plate, StandardCharsets.UTF_8.toString())
-                                navController.navigate("success_screen/$encodedPlate/$seat")
+                                    val password = Base64.encodeToString(
+                                        "$shortCode$passkey$timestamp".toByteArray(),
+                                        Base64.NO_WRAP
+                                    )
+
+                                    val request = StkPushRequest(
+                                        BusinessShortCode = shortCode,
+                                        Password = password,
+                                        Timestamp = timestamp,
+                                        TransactionType = "CustomerPayBillOnline", // For Paybill
+                                        Amount = price.filter { it.isDigit() }.ifEmpty { "1" },
+                                        PartyA = formattedPhone,
+                                        PartyB = shortCode,
+                                        PhoneNumber = formattedPhone,
+                                        CallBackURL = "https://yourdomain.com/callback", // Must be HTTPS
+                                        AccountReference = "BusBookingApp",
+                                        TransactionDesc = "Seat $seat Payment"
+                                    )
+
+                                    val stkResponse = RetrofitClient.mpesaService.initiateStkPush(
+                                        bearerToken = "Bearer $accessToken",
+                                        request = request
+                                    )
+
+                                    if (stkResponse.isSuccessful) {
+                                        val encodedPlate = URLEncoder.encode(plate, "UTF-8")
+                                        // Suggestion: Encode seat and time as well if they have special chars
+                                        navController.navigate("success_screen/$encodedPlate/$seat/$time/$price")
+                                    } else {
+                                        Log.e("MpesaError", "STK Failure: ${stkResponse.errorBody()?.string()}")
+                                    }
+                                }
                             } else {
-                                Log.e("MpesaError", "Response Error: ${response.errorBody()?.string()}")
-                                isProcessing = false
+                                Log.e("MpesaError", "Auth Failure: ${tokenResponse.errorBody()?.string()}")
                             }
-
                         } catch (e: Exception) {
-                            Log.e("NetworkError", "Failed to connect: ${e.message}")
+                            Log.e("NetworkError", "Critical Exception: ${e.message}")
+                        } finally {
                             isProcessing = false
                         }
                     }
                 }
             },
+
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -147,10 +164,8 @@ fun PaymentScreen(
         ) {
             if (isProcessing) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("Sending Prompt...")
             } else {
-                Text("Pay Ksh $price", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Pay Ksh ${price.filter { it.isDigit() }}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -159,21 +174,34 @@ fun PaymentScreen(
 @Composable
 fun TicketSummaryCard(plate: String, seat: String, time: String, price: String) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp),
         shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("TICKET SUMMARY", color = Color(0xFF94A3B8), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text("Trip Summary", color = Color(0xFF64748B), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Bus: $plate", color = Color(0xFF1E293B), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text("Seat: $seat", color = Color(0xFF64748B), fontSize = 16.sp)
-            Text(time, color = Color(0xFF2563EB), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color(0xFFF1F5F9))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Total Amount", color = Color(0xFF1E293B))
-                Text("Ksh $price", color = Color(0xFF1E293B), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Column {
+                    Text("BUS PLATE", color = Color.Gray, fontSize = 10.sp)
+                    Text(plate, fontWeight = FontWeight.Bold)
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("SEAT", color = Color.Gray, fontSize = 10.sp)
+                    Text(seat, fontWeight = FontWeight.Bold)
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Column {
+                    Text("TIME", color = Color.Gray, fontSize = 10.sp)
+                    Text(time, fontWeight = FontWeight.Bold)
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("TOTAL PRICE", color = Color.Gray, fontSize = 10.sp)
+                    Text(price, color = Color(0xFF2563EB), fontWeight = FontWeight.ExtraBold)
+                }
             }
         }
     }
