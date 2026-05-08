@@ -48,7 +48,7 @@ fun LoginScreen(navController: NavController) {
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
-                        painter = painterResource(id = R.drawable.bg),
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -67,7 +67,7 @@ fun LoginScreen(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.logo),
+                            painter = painterResource(id = R.drawable.bg),
                             contentDescription = "Logo",
                             modifier = Modifier
                                 .size(140.dp)
@@ -93,8 +93,8 @@ fun LoginScreen(navController: NavController) {
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
-                                cursorColor = Color.Red,
-                                focusedBorderColor = Color.Red,
+                                cursorColor = Color.Green,
+                                focusedBorderColor = Color.Green,
                                 unfocusedBorderColor = Color.Gray
                             ),
                             modifier = Modifier.fillMaxWidth()
@@ -112,8 +112,8 @@ fun LoginScreen(navController: NavController) {
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
-                                cursorColor = Color.Red,
-                                focusedBorderColor = Color.Red,
+                                cursorColor = Color.Green,
+                                focusedBorderColor = Color.Green,
                                 unfocusedBorderColor = Color.Gray
                             ),
                             modifier = Modifier.fillMaxWidth()
@@ -151,7 +151,7 @@ fun LoginScreen(navController: NavController) {
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 "Register Here",
-                                color = Color.Red,
+                                color = Color.Green,
                                 modifier = Modifier.clickable { navController.navigate("register") }
                             )
                         }

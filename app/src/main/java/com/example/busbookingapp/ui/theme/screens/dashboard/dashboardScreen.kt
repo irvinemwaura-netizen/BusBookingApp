@@ -46,15 +46,15 @@ fun busClassesForRoute(luxuryPrice: Int, expressPrice: Int, standardPrice: Int) 
 )
 
 val busRoutes = listOf(
-    BusRoute("Nairobi ↔ Eldoret", "5 hrs", defaultDepartures, busClassesForRoute(1200, 1000, 700)),
-    BusRoute("Nairobi ↔ Mombasa", "8 hrs", defaultDepartures, busClassesForRoute(2500, 2000, 1200)),
-    BusRoute("Nairobi ↔ Kisumu", "6 hrs", defaultDepartures, busClassesForRoute(1800, 1500, 900)),
-    BusRoute("Nairobi ↔ Nakuru", "2 hrs", defaultDepartures, busClassesForRoute(700, 600, 350)),
-    BusRoute("Nairobi ↔ Meru", "4 hrs", defaultDepartures, busClassesForRoute(1000, 800, 500)),
-    BusRoute("Nairobi ↔ Nyeri", "3 hrs", defaultDepartures, busClassesForRoute(800, 600, 400)),
-    BusRoute("Nairobi ↔ Namanga", "3 hrs", defaultDepartures, busClassesForRoute(900, 700, 500)),
-    BusRoute("Nairobi ↔ Malindi", "9 hrs", defaultDepartures, busClassesForRoute(2800, 2200, 1500)),
-    BusRoute("Nairobi ↔ Busia", "7 hrs", defaultDepartures, busClassesForRoute(1800, 1400, 1000)),
+    BusRoute("Nairobi -- Eldoret", "5 hrs", defaultDepartures, busClassesForRoute(1200, 1000, 700)),
+    BusRoute("Nairobi -- Mombasa", "8 hrs", defaultDepartures, busClassesForRoute(2500, 2000, 1200)),
+    BusRoute("Nairobi -- Kisumu", "6 hrs", defaultDepartures, busClassesForRoute(1800, 1500, 900)),
+    BusRoute("Nairobi -- Nakuru", "2 hrs", defaultDepartures, busClassesForRoute(700, 600, 350)),
+    BusRoute("Nairobi -- Meru", "4 hrs", defaultDepartures, busClassesForRoute(1000, 800, 500)),
+    BusRoute("Nairobi -- Nyeri", "3 hrs", defaultDepartures, busClassesForRoute(800, 600, 400)),
+    BusRoute("Nairobi -- Namanga", "3 hrs", defaultDepartures, busClassesForRoute(900, 700, 500)),
+    BusRoute("Nairobi -- Malindi", "9 hrs", defaultDepartures, busClassesForRoute(2800, 2200, 1500)),
+    BusRoute("Nairobi -- Busia", "7 hrs", defaultDepartures, busClassesForRoute(1800, 1400, 1000)),
 )
 
 @Composable
@@ -62,61 +62,105 @@ fun DashboardScreen(
     navController: NavController,
     authViewModel: AuthViewModel = viewModel()
 ) {
-    // Now 'displayName' won't be an unresolved reference!
+    // These states were already in your code, now we will actually use them
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchVisible by remember { mutableStateOf(false) }
+
+    val filteredRoutes = remember(searchQuery) {
+        if (searchQuery.isEmpty()) {
+            busRoutes
+        } else {
+            busRoutes.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        }
+    }
+
     val userName = authViewModel.currentUser?.displayName ?: "Traveler"
     val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(16.dp)
     ) {
-        Text(
-            text = "Welcome, $userName ",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1E293B)
-        )
-        Text(
-            text = "Book your next trip easily",
-            color = Color(0xFF64748B),
-            fontSize = 14.sp
-        )
+        Text(text = "Welcome, $userName ", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+        Text(text = "Book your next trip easily", color = Color(0xFF64748B), fontSize = 14.sp)
 
         Spacer(modifier = Modifier.height(24.dp))
-
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            DashboardCard("Search", Icons.Default.Search) { /* Search Logic */ }
+            // FIX: Toggle the search bar visibility when clicked
+            DashboardCard("Search", Icons.Default.Search) {
+                isSearchVisible = !isSearchVisible
+            }
 
             DashboardCard("My Trips", Icons.Default.History) {
-                navController.navigate("my_trips_screen")
+                navController.navigate("trips_screen")
             }
 
             DashboardCard("Buses", Icons.Default.DirectionsBus) {
-                navController.navigate("trips_screen")
+                navController.navigate("buses_screen")
             }
         }
 
+        // ADDED: The actual Search Input field that appears when Search is clicked
+        AnimatedVisibility(visible = isSearchVisible) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                placeholder = { Text("Where to? (e.g. Mombasa)") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF2563EB),
+                    unfocusedBorderColor = Color(0xFFE2E8F0)
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
-        Text("Featured Routes", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+        Text(
+            text = if (searchQuery.isEmpty()) "Featured Routes" else "Search Results",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1E293B)
+        )
         Spacer(modifier = Modifier.height(12.dp))
 
+        // FIX: Use 'filteredRoutes' instead of 'busRoutes'
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(busRoutes) { route ->
-                RouteCard(route = route, navController = navController)
+            if (filteredRoutes.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text("No routes found for \"$searchQuery\"", color = Color.Gray, modifier = Modifier.padding(20.dp))
+                    }
+                }
+            } else {
+                items(filteredRoutes) { route ->
+                    RouteCard(route = route, navController = navController)
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Logout Button
         Button(
             onClick = { authViewModel.logout(navController, context) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEE2E2), contentColor = Color(0xFF991B1B)),

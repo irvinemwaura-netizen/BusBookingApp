@@ -55,7 +55,7 @@ fun RegisterScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.bg),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -74,7 +74,7 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.bg),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .size(140.dp)
@@ -100,8 +100,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
@@ -114,8 +114,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
@@ -129,8 +129,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) }
@@ -144,8 +144,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
@@ -159,8 +159,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) }
@@ -174,8 +174,8 @@ fun RegisterScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color.Red,
-                    focusedBorderColor = Color.Red,
+                    cursorColor = Color.Green,
+                    focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Gray
                 ),
                 leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) }

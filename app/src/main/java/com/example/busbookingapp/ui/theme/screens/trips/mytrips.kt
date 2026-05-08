@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// 1. ADDED DATA CLASS: This fixes the "Unresolved reference 'BookedTrip'" errors
 data class BookedTrip(
     val busId: String,
     val route: String,

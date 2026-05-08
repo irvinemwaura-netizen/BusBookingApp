@@ -29,13 +29,12 @@ fun AppNavHost(
         composable(Routes.ROUTE_LOGIN) { LoginScreen(navController) }
         composable(Routes.ROUTE_DASHBOARD) { DashboardScreen(navController) }
 
-        // --- Fleet Manager / Buses ---
-        composable(Routes.ROUTE_TRIPS) {
+        composable(Routes.ROUTE_BUSSES) {
             BusListScreen(navController)
         }
 
-        // --- My Bookings ---
-        composable(Routes.ROUTE_BUSSES) { // Note: Your object has ROUTE_BUSSES for the trips list
+
+        composable(Routes.ROUTE_TRIPS) {
             MyTripsScreen(navController)
         }
 

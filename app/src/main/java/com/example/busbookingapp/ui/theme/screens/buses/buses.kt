@@ -25,24 +25,24 @@ data class BusRoute(val name: String, val brandColor: Color)
 @Composable
 fun BusListScreen(navController: NavController) {
     val routes = listOf(
-        BusRoute("Nairobi ↔ Eldoret", Color(0xFF2563EB)),
-        BusRoute("Nairobi ↔ Mombasa", Color(0xFF16A34A)),
-        BusRoute("Nairobi ↔ Kisumu", Color(0xFFDC2626)),
-        BusRoute("Nairobi ↔ Nakuru", Color(0xFFEA580C)),
-        BusRoute("Nairobi ↔ Meru", Color(0xFF9333EA)),
-        BusRoute("Nairobi ↔ Nyeri", Color(0xFFCA8A04)),
-        BusRoute("Nairobi ↔ Namanga", Color(0xFF0D9488)),
-        BusRoute("Nairobi ↔ Malindi", Color(0xFFDB2777)),
-        BusRoute("Nairobi ↔ Busia", Color(0xFF4F46E5)),
-        BusRoute("Nairobi ↔ Kakamega", Color(0xFF0284C7)),
-        BusRoute("Nairobi ↔ Kitale", Color(0xFF65A30D)),
-        BusRoute("Nairobi ↔ Garissa", Color(0xFFF97316)),
-        BusRoute("Nairobi ↔ Narok", Color(0xFF78350F)),
-        BusRoute("Nairobi ↔ Kericho", Color(0xFF0891B2)),
-        BusRoute("Nairobi ↔ Machakos", Color(0xFF84CC16)),
-        BusRoute("Nairobi ↔ Thika", Color(0xFF475569)),
-        BusRoute("Nairobi ↔ Naivasha", Color(0xFFEAB308)),
-        BusRoute("Nairobi ↔ Voi", Color(0xFF7C3AED))
+        BusRoute("Nairobi -- Eldoret", Color.Blue),
+        BusRoute("Nairobi -- Mombasa", Color.Green),
+        BusRoute("Nairobi -- Kisumu", Color.Red),
+        BusRoute("Nairobi -- Nakuru", Color.Magenta),
+        BusRoute("Nairobi -- Meru", Color.Magenta),
+        BusRoute("Nairobi -- Nyeri", Color.Yellow),
+        BusRoute("Nairobi -- Namanga", Color.Cyan),
+        BusRoute("Nairobi -- Malindi", Color.Magenta),
+        BusRoute("Nairobi -- Busia", Color.Blue), // Closest to Indigo
+        BusRoute("Nairobi -- Kakamega", Color.Blue), // Closest to Light Blue
+        BusRoute("Nairobi -- Kitale", Color.Green), // Closest to Lime
+        BusRoute("Nairobi -- Garissa", Color.Red), // Closest to Orange
+        BusRoute("Nairobi -- Narok", Color.Black), // Closest to Brown
+        BusRoute("Nairobi -- Kericho", Color.Cyan),
+        BusRoute("Nairobi -- Machakos", Color.Green),
+        BusRoute("Nairobi -- Thika", Color.Gray),
+        BusRoute("Nairobi -- Naivasha", Color.Yellow),
+        BusRoute("Nairobi -- Voi", Color.Magenta) // Closest to Deep Purple
     )
 
     Scaffold(
