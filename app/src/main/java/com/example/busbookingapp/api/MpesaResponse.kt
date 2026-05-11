@@ -1,6 +1,4 @@
 package com.example.busbookingapp.api
-
-
 data class MpesaResponse(
     val MerchantRequestID: String,
     val CheckoutRequestID: String,

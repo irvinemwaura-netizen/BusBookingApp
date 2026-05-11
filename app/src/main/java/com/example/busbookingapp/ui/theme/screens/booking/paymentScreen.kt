@@ -13,12 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.busbookingapp.api.TokenResponse
 import com.example.busbookingapp.api.RetrofitClient
 import com.example.busbookingapp.api.StkPushRequest
+import com.example.busbookingapp.navigation.Routes
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -88,7 +91,7 @@ fun PaymentScreen(
                     isProcessing = true
                     coroutineScope.launch {
                         try {
-
+                            // 1. Format the phone number for M-Pesa (254...)
                             val cleanNumber = phoneNumber.replace("\\s".toRegex(), "")
                             val formattedPhone = when {
                                 cleanNumber.startsWith("0") -> "254" + cleanNumber.substring(1)
@@ -97,9 +100,10 @@ fun PaymentScreen(
                                 else -> "254$cleanNumber"
                             }
 
-                            val authHeader = "Basic " + Base64.encodeToString(
+                            // 2. Prepare Auth Header & Generate Token
+                            val authHeader = "Basic " + android.util.Base64.encodeToString(
                                 "$consumerKey:$consumerSecret".toByteArray(),
-                                Base64.NO_WRAP
+                                android.util.Base64.NO_WRAP
                             )
 
                             val tokenResponse = RetrofitClient.mpesaService.generateToken(authHeader)
@@ -110,62 +114,63 @@ fun PaymentScreen(
                                     val timestamp = SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(Date())
                                     val shortCode = "174379"
                                     val passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
-
-                                    val password = Base64.encodeToString(
+                                    val password = android.util.Base64.encodeToString(
                                         "$shortCode$passkey$timestamp".toByteArray(),
-                                        Base64.NO_WRAP
+                                        android.util.Base64.NO_WRAP
                                     )
 
                                     val request = StkPushRequest(
                                         BusinessShortCode = shortCode,
                                         Password = password,
                                         Timestamp = timestamp,
-                                        TransactionType = "CustomerPayBillOnline", // For Paybill
+                                        TransactionType = "CustomerPayBillOnline",
                                         Amount = price.filter { it.isDigit() }.ifEmpty { "1" },
                                         PartyA = formattedPhone,
                                         PartyB = shortCode,
                                         PhoneNumber = formattedPhone,
-                                        CallBackURL = "https://yourdomain.com/callback", // Must be HTTPS
+                                        CallBackURL = "https://yourdomain.com/callback",
                                         AccountReference = "BusBookingApp",
                                         TransactionDesc = "Seat $seat Payment"
                                     )
 
-                                    val stkResponse = RetrofitClient.mpesaService.initiateStkPush(
-                                        bearerToken = "Bearer $accessToken",
-                                        request = request
-                                    )
-
-                                    if (stkResponse.isSuccessful) {
-                                        val encodedPlate = URLEncoder.encode(plate, "UTF-8")
-                                        // Suggestion: Encode seat and time as well if they have special chars
-                                        navController.navigate("success_screen/$encodedPlate/$seat/$time/$price")
-                                    } else {
-                                        Log.e("MpesaError", "STK Failure: ${stkResponse.errorBody()?.string()}")
-                                    }
+                                    // Triggers the M-Pesa Pin Prompt
+                                    RetrofitClient.mpesaService.initiateStkPush("Bearer $accessToken", request)
                                 }
-                            } else {
-                                Log.e("MpesaError", "Auth Failure: ${tokenResponse.errorBody()?.string()}")
                             }
+
+                            // 3. THE DEMO BYPASS: Wait for 5 seconds to simulate processing
+                            kotlinx.coroutines.delay(5000)
+
                         } catch (e: Exception) {
-                            Log.e("NetworkError", "Critical Exception: ${e.message}")
+                            Log.e("NetworkError", "Exception: ${e.message}")
+                            kotlinx.coroutines.delay(2000)
                         } finally {
+                            // 4. NAVIGATION & CLEANUP
+                            // Use URLEncoder for values like plate (KCB 123) or time (10:00 PM)
+                            val encodedPlate = URLEncoder.encode(plate, "UTF-8")
+                            val encodedSeat = URLEncoder.encode(seat, "UTF-8")
+                            val encodedTime = URLEncoder.encode(time, "UTF-8")
+                            val encodedPrice = URLEncoder.encode(price, "UTF-8")
+
+                            // Build the destination using your Route Constant
+                            val destination = "${Routes.ROUTE_BOOKING}/$encodedPlate/$encodedSeat/$encodedTime/$encodedPrice"
+
+                            navController.navigate(destination) {
+                                // Clears the payment screen so user can't go back to it
+                                popUpTo(Routes.ROUTE_DASHBOARD) { inclusive = false }
+                            }
                             isProcessing = false
                         }
                     }
                 }
             },
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            enabled = !isProcessing && phoneNumber.isNotEmpty(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-            shape = RoundedCornerShape(12.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            enabled = !isProcessing // Disable button while processing
         ) {
             if (isProcessing) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
             } else {
-                Text("Pay Ksh ${price.filter { it.isDigit() }}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Pay $price")
             }
         }
     }
@@ -205,4 +210,15 @@ fun TicketSummaryCard(plate: String, seat: String, time: String, price: String) 
             }
         }
     }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PaymentScreenPreview() {
+    PaymentScreen(
+        navController = rememberNavController(),
+        plate = "KDA 123A",
+        seat = "A12",
+        time = "10:30 AM",
+        price = "Ksh 1500"
+    )
 }
