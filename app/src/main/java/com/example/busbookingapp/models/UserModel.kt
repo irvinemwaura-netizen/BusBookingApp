@@ -8,3 +8,10 @@ data class UserModel(
     val name: String
 
 )
+// Example Model
+data class AdminUser(
+    val uid: String = "",
+    val name: String = "",
+    val email: String = "",
+    val role: String = "admin"
+)

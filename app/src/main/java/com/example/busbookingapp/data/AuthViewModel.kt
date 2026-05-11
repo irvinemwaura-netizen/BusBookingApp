@@ -12,7 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
+    private val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
 
     val currentUser: com.google.firebase.auth.FirebaseUser?
         get() = auth.currentUser
@@ -101,5 +101,27 @@ class AuthViewModel : ViewModel() {
             popUpTo(ROUTE_DASHBOARD) { inclusive = true }
             launchSingleTop = true
         }
+    }
+    fun adminLogin(email: String, pass: String, navController: NavController, context: android.content.Context) {
+        auth.signInWithEmailAndPassword(email, pass)
+            .addOnSuccessListener { authResult ->
+                val uid = authResult.user?.uid ?: ""
+
+                db.collection("users").document(uid).get()
+                    .addOnSuccessListener { document ->
+                        val userRole = document.getString("role")
+                        if (userRole == "admin") {
+                            Toast.makeText(context, "Admin Login Successful", Toast.LENGTH_SHORT).show()
+                            navController.navigate("admin_dashboard") // Replace with your actual route
+                        } else {
+                            // Log them out if they aren't an admin
+                            auth.signOut()
+                            Toast.makeText(context, "Access Denied: Not an Admin", Toast.LENGTH_LONG).show()
+                        }
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }

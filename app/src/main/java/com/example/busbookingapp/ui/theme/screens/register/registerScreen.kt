@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import android.widget.Toast
+import com.example.busbookingapp.data.AdminViewModel
+import com.example.busbookingapp.models.AdminUser
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,7 +45,8 @@ import com.example.busbookingapp.navigation.Routes.ROUTE_REGISTER
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    adminViewModel: AdminViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -199,6 +203,35 @@ fun RegisterScreen(
                     containerColor = Color.Gray
                 )) {
                 Text("Register")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    val newAdmin = AdminUser(
+                        name = name,
+                        email = email,
+                        // Assuming your AdminUser model matches your text fields
+                    )
+
+                    // Calling the Admin Logic you created earlier
+                    adminViewModel.registerNewAdmin(newAdmin, password) { success, message ->
+                        if (success) {
+                            navController.navigate("admin_dashboard") // Navigate to admin side
+                        } else {
+                            Toast.makeText(context, "Admin Error: $message", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(0.7f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFD32F2F) // Reddish color to distinguish Admin
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Register as Admin", fontWeight = FontWeight.Bold)
             }
 
             Row {
